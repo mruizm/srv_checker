@@ -1,9 +1,11 @@
+#v1.0.0
 # ovdeploy -cmd "sc query type= service" -node nxsclctx04.nexussa.cl | grep ^SERVICE_NAME | grep -i
 #ovdeploy -cmd "sc query type= service" -node nxsclctx04.nexussa.cl | grep ^SERVICE_NAME | grep -i citrix | awk -F: '{print $2}' | sed 's/^ //'
 #!/usr/bin/perl
 #
 # To select type of startup (AUTO_START, AUTO_START (Delayed), DEMAND_START)
 #
+#Usage: perl srv_checker.pl --node <node_name>|--list_nodes <input_file> --search <all|search_pattern> --timeout <miliseconds>
 use warnings;
 use strict;
 use Getopt::Long;
