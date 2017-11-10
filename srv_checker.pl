@@ -34,7 +34,7 @@ my @arr_test_title =  ();
 my $node_counter = 0;
 chomp(my $dateTimeStamp = `date "+%m%d%Y_%H%M%S"`);
 my $out_module_audit = "results_srv_checker.$dateTimeStamp";
-my $title_csv = "node_name;node_name_found;node_name_mach_type;node_name_ssl;srv_name_start_type";
+my $title_csv = "node_name;node_name_found;node_name_mach_type;node_name_ssl;srv_name/srv_display_name/=>srv_startup_type"
 
 
 GetOptions( 'node|n=s' => \$nodename,
@@ -166,7 +166,7 @@ foreach my $loaded_nodename (@nodename_array)
               $sc_display_name = $1;
               chomp($sc_display_name);
               $sc_display_name =~ s/\s+//;
-              push(@arr_service_start_type, $filtered_service_name."//".$sc_display_name."=>".$start_type);
+              push(@arr_service_start_type, "/".$filtered_service_name."/".$sc_display_name."/=>".$start_type);
             #  #print "\n$filtered_service_name --> $start_type";
             }
           }
