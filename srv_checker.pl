@@ -22,6 +22,8 @@ my $nodenames_list;
 my $nodename;
 my $search_pattern;
 my $timeout;
+my $sc_display_name;
+my $start_type;
 #my @r_check_node_in_HPOM = ();
 my @node_info;
 my @get_service_names = ();
@@ -150,12 +152,22 @@ foreach my $loaded_nodename (@nodename_array)
             chomp($r_service_details);
             if ($r_service_details =~ m/\s+START_TYPE\s+:\s+[\d+]\s+(.*)/)
             {
-              my $start_type = $1;
+              $start_type = $1;
               chomp($start_type);
               $start_type =~ s/\s+//;
               $hash_service_start_type{$filtered_service_name} = $start_type;
-              push(@arr_service_start_type, $filtered_service_name."=>".$start_type);
+              #push(@arr_service_start_type, $filtered_service_name."=>".$start_type);
+              #push(@arr_service_start_type, $filtered_service_name."//".$sc_display_name."=>".$start_type);
               #print "\n$filtered_service_name --> $start_type";
+            }
+            if ($r_service_details =~ m/\s+DISPLAY_NAME\s+:\s+(.*)/)
+            {
+              #print "$r_service_details\n";
+              $sc_display_name = $1;
+              chomp($sc_display_name);
+              $sc_display_name =~ s/\s+//;
+              push(@arr_service_start_type, $filtered_service_name."//".$sc_display_name."=>".$start_type);
+            #  #print "\n$filtered_service_name --> $start_type";
             }
           }
         }
