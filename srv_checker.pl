@@ -27,6 +27,9 @@ my $start_type;
 #my @r_check_node_in_HPOM = ();
 my @node_info;
 my @get_service_names = ();
+my @get_service_names_paired = ();
+my @get_service_names_paired_filtered = ();
+my $paired_name_and_display = "";
 my %hash_service_start_type = ();
 my @arr_service_start_type = ();
 my $scalar_test_return_values;
@@ -132,7 +135,42 @@ foreach my $loaded_nodename (@nodename_array)
       else
       {
         #print "\npattern: $search_pattern\n";
-        @get_service_names = qx{ovdeploy -cmd \"sc query type\= service\" -node $loaded_nodename -cmd_timeout $timeout | grep ^SERVICE_NAME | grep -Ei \'$service_name_filter\'};
+        ##@get_service_names = qx{ovdeploy -cmd \"sc query type\= service\" -node $loaded_nodename -cmd_timeout $timeout | grep ^SERVICE_NAME | grep -Ei \'$service_name_filter\'};
+        @get_service_names_paired = qx{ovdeploy -cmd \"sc query type\= service\" -node $loaded_nodename -cmd_timeout $timeout | grep \'^.*_NAME\'};
+        foreach my $r_get_service_names (@get_service_names_paired)
+        {
+          chomp($r_get_service_names);
+          #print "$r_get_service_names\n";
+          if($r_get_service_names =~ m/^(SERVICE_NAME:\s+.*)/)
+          {
+            chomp($r_get_service_names = $1);
+            $paired_name_and_display = $paired_name_and_display."/".$r_get_service_names;
+          }
+          if ($r_get_service_names =~ m/^(DISPLAY_NAME:\s+.*)/)
+          {
+            chomp($r_get_service_names = $1);
+            $paired_name_and_display = $paired_name_and_display."/".$r_get_service_names;
+            #print "$paired_name_and_display\n";
+            push(@get_service_names, $paired_name_and_display);
+            $paired_name_and_display = "";
+            #push(@get_service_names_paired, $paired_name_and_display);
+          }
+        }
+        #print @get_service_names_paired;
+        foreach my $r_get_service_names_p (@get_service_names)
+        {
+          #print "$r_get_service_names_p matched \'$service_name_filter\'?\n";
+          if ($r_get_service_names_p =~ m/$service_name_filter/ig)
+          {
+            #print "YES!!!!!!!!!!!!!!!!!!!!\n";
+            $r_get_service_names_p =~ m/\/(.*)\//;
+            $r_get_service_names_p = $1;
+            #print "$r_get_service_names_p\n";
+            push(@get_service_names_paired_filtered, $r_get_service_names_p);
+          }
+        }
+        #exit 0;
+      @get_service_names = @get_service_names_paired_filtered;
       }
       foreach my $r_get_service_names (@get_service_names)
       {
@@ -165,7 +203,7 @@ foreach my $loaded_nodename (@nodename_array)
               #print "$r_service_details\n";
               $sc_display_name = $1;
               chomp($sc_display_name);
-              $sc_display_name =~ s/\s+//;
+              $sc_display_name =~ s/^\s+//;
               push(@arr_service_start_type, "/".$filtered_service_name."/".$sc_display_name."/=>".$start_type);
             #  #print "\n$filtered_service_name --> $start_type";
             }
